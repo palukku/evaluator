@@ -19,11 +19,11 @@ public class MarkdownExporter {
                        String overallComment, String outputFileName) throws IOException {
         StringBuilder builder = new StringBuilder();
         builder.append("# Evaluation\n\n");
-        if (appendBlockQuote(builder, "", overallComment)) {
+        if (appendConfigQuote(builder, "", overallComment)) {
             builder.append("\n");
         }
         if (contextLabel != null && !contextLabel.isBlank()) {
-            builder.append("**Kontext:** ").append(contextLabel).append("  \\n");
+            builder.append("**Kontext:** ").append(contextLabel).append("  \n");
         }
         builder.append("**Erstellt am:** ").append(Instant.now()).append("\n\n");
 
@@ -80,13 +80,18 @@ public class MarkdownExporter {
         }
         String indent = "  ".repeat(depth);
         builder.append(indent)
-                .append("- ")
-                .append(node.getName())
-                .append(": ")
-                .append(POINT_FORMAT.format(node.getAchievedPoints()))
-                .append(" / ")
-                .append(POINT_FORMAT.format(node.getMaxPoints()))
-                .append("\n");
+               .append("- ")
+               .append("[")
+               .append(node.getAchievedPoints() >= node.getMaxPoints() ? "x" : " ")
+               .append("] ")
+               .append("(")
+               .append(POINT_FORMAT.format(node.getAchievedPoints()))
+               .append(" / ")
+               .append(POINT_FORMAT.format(node.getMaxPoints()))
+               .append(node.getMaxPoints() == 1.0 ? " Punkt" : " Punkte")
+               .append(") ")
+               .append(node.getName())
+               .append("\n");
         appendNodeComments(builder, indent + "  ", node);
         if (node.isLeaf()) {
             return;
@@ -95,14 +100,14 @@ public class MarkdownExporter {
     }
 
     private void appendNodeComments(StringBuilder builder, String prefix, EvaluationNode node) {
-        boolean wroteConfig = appendBlockQuote(builder, prefix, node.getConfigurationComment());
-        boolean wroteEvaluation = appendBlockQuote(builder, prefix, node.getComment());
+        boolean wroteConfig = appendConfigQuote(builder, prefix, node.getConfigurationComment());
+        boolean wroteEvaluation = appendConfigQuote(builder, prefix, node.getComment());
         if ((wroteConfig || wroteEvaluation) && !node.isLeaf()) {
             builder.append("\n");
         }
     }
 
-    private boolean appendBlockQuote(StringBuilder builder, String prefix, String text) {
+    private boolean appendConfigQuote(StringBuilder builder, String prefix, String text) {
         if (text == null) {
             return false;
         }
@@ -113,9 +118,7 @@ public class MarkdownExporter {
         String normalized = trimmed.replace("\r\n", "\n").replace('\r', '\n');
         String[] lines = normalized.split("\n", -1);
         for (String line : lines) {
-            if (line.isBlank()) {
-                builder.append(prefix).append("> ").append("\n");
-            } else {
+            if (!line.isBlank()) {
                 builder.append(prefix).append("> ").append(line.stripTrailing()).append("\n");
             }
         }
