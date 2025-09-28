@@ -1,9 +1,5 @@
 package dev.phlp.stud.evaluator.model;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -19,8 +15,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 public class EvaluationNode {
-    EvaluationNode parent;
     private final String id;
     private final String name;
     private final double maxPoints;
@@ -30,14 +29,18 @@ public class EvaluationNode {
     private final BooleanProperty achievedPointsDefined = new SimpleBooleanProperty(false);
     private final ObjectProperty<EvaluationStatus> status = new SimpleObjectProperty<>(EvaluationStatus.PENDING);
     private final StringProperty comment = new SimpleStringProperty("");
+    private final String configurationComment;
+    private final boolean pseudo;
 
-    public EvaluationNode(String id, String name, double maxPoints, List<String> commands) {
-        this.id =
-                id != null ?
-                id :
-                UUID.randomUUID().toString();
+    EvaluationNode parent;
+
+    public EvaluationNode(String id, String name, double maxPoints, List<String> commands,
+                          String configurationComment, boolean pseudo) {
+        this.id = id != null ? id : UUID.randomUUID().toString();
         this.name = Objects.requireNonNull(name, "name");
         this.maxPoints = maxPoints;
+        this.configurationComment = configurationComment != null ? configurationComment : "";
+        this.pseudo = pseudo;
         if (commands != null) {
             this.commands.addAll(commands);
         }
@@ -76,6 +79,9 @@ public class EvaluationNode {
     }
 
     public double getMaxPoints() {
+        if (pseudo) {
+            return 0.0;
+        }
         if (isLeaf()) {
             return maxPoints;
         }
@@ -102,15 +108,6 @@ public class EvaluationNode {
         return achievedPoints.get();
     }
 
-    public void setAchievedPoints(double points) {
-        if (!isLeaf()) {
-            achievedPoints.set(children.stream().mapToDouble(EvaluationNode::getAchievedPoints).sum());
-        } else {
-            achievedPoints.set(Math.max(0.0, Math.min(points, maxPoints)));
-            achievedPointsDefined.set(true);
-        }
-    }
-
     public ReadOnlyBooleanProperty achievedPointsDefinedProperty() {
         return achievedPointsDefined;
     }
@@ -120,6 +117,24 @@ public class EvaluationNode {
             return children.stream().anyMatch(EvaluationNode::isAchievedPointsDefined);
         }
         return achievedPointsDefined.get();
+    }
+
+    public void setAchievedPoints(double points) {
+        if (pseudo) {
+            achievedPoints.set(0.0);
+            achievedPointsDefined.set(false);
+            if (parent != null) {
+                parent.refreshAggregatedPoints();
+                parent.refreshAggregatedStatus();
+            }
+            return;
+        }
+        if (!isLeaf()) {
+            achievedPoints.set(children.stream().mapToDouble(EvaluationNode::getAchievedPoints).sum());
+        } else {
+            achievedPoints.set(Math.max(0.0, Math.min(points, maxPoints)));
+            achievedPointsDefined.set(true);
+        }
     }
 
     public void clearAchievedPoints() {
@@ -136,6 +151,14 @@ public class EvaluationNode {
     }
 
     public void setAchievedPointsFromStorage(double points, boolean defined) {
+        if (pseudo) {
+            achievedPoints.set(0.0);
+            achievedPointsDefined.set(false);
+            if (parent != null) {
+                parent.refreshAggregatedPoints();
+            }
+            return;
+        }
         if (!isLeaf()) {
             return;
         }
@@ -159,18 +182,6 @@ public class EvaluationNode {
         return status.get();
     }
 
-    public void setStatus(EvaluationStatus newStatus) {
-        status.set(
-                newStatus != null ?
-                newStatus :
-                EvaluationStatus.PENDING);
-        if (parent != null) {
-            parent.refreshAggregatedStatus();
-        } else if (!isLeaf()) {
-            refreshAggregatedStatus();
-        }
-    }
-
     public StringProperty commentProperty() {
         return comment;
     }
@@ -179,18 +190,29 @@ public class EvaluationNode {
         return comment.get();
     }
 
+    public String getConfigurationComment() {
+        return configurationComment;
+    }
+
+    public boolean isPseudo() {
+        return pseudo;
+    }
+
     public void setComment(String value) {
-        comment.set(
-                value != null ?
-                value :
-                "");
+        comment.set(value != null ? value : "");
     }
 
     public void setCommentFromStorage(String value) {
-        comment.set(
-                value != null ?
-                value :
-                "");
+        comment.set(value != null ? value : "");
+    }
+
+    public void setStatus(EvaluationStatus newStatus) {
+        status.set(newStatus != null ? newStatus : EvaluationStatus.PENDING);
+        if (parent != null) {
+            parent.refreshAggregatedStatus();
+        } else if (!isLeaf()) {
+            refreshAggregatedStatus();
+        }
     }
 
     public void setStatusFromStorage(EvaluationStatus storedStatus) {
@@ -221,8 +243,13 @@ public class EvaluationNode {
 
     public void markFullyAwarded() {
         if (isLeaf()) {
-            achievedPoints.set(maxPoints);
-            achievedPointsDefined.set(true);
+            if (pseudo) {
+                achievedPoints.set(0.0);
+                achievedPointsDefined.set(false);
+            } else {
+                achievedPoints.set(maxPoints);
+                achievedPointsDefined.set(true);
+            }
             if (parent != null) {
                 parent.refreshAggregatedPoints();
                 parent.refreshAggregatedStatus();
@@ -251,7 +278,14 @@ public class EvaluationNode {
 
     public void refreshAggregatedPoints() {
         if (!isLeaf()) {
-            achievedPoints.set(children.stream().mapToDouble(EvaluationNode::getAchievedPoints).sum());
+            if (pseudo) {
+                achievedPoints.set(0.0);
+            } else {
+                achievedPoints.set(children.stream().mapToDouble(EvaluationNode::getAchievedPoints).sum());
+            }
+        } else if (pseudo) {
+            achievedPoints.set(0.0);
+            achievedPointsDefined.set(false);
         }
         if (parent != null) {
             parent.refreshAggregatedPoints();
@@ -320,19 +354,23 @@ public class EvaluationNode {
         if (anyCancelled) {
             return EvaluationStatus.CANCELLED;
         }
-        return allSuccess ?
-               EvaluationStatus.SUCCESS :
-               EvaluationStatus.PENDING;
+        return allSuccess ? EvaluationStatus.SUCCESS : EvaluationStatus.PENDING;
     }
 
     public boolean isFullyAwarded() {
+        if (pseudo) {
+            return false;
+        }
         if (isLeaf()) {
-            return Double.compare(getAchievedPoints(), maxPoints) == 0;
+            return Double.compare(getAchievedPoints(), getMaxPoints()) == 0;
         }
         return children.stream().allMatch(EvaluationNode::isFullyAwarded);
     }
 
     public boolean hasPartialAward() {
+        if (pseudo) {
+            return false;
+        }
         if (isLeaf()) {
             return getAchievedPoints() > 0.0 && !isFullyAwarded();
         }

@@ -366,8 +366,9 @@ public final class DefaultEvaluationWorkflow implements EvaluationWorkflow {
         }
         RepositoryContext context = repositoryContexts.get(currentContextIndex);
         try {
+            String sheetComment = evaluationConfig != null ? evaluationConfig.getComment() : null;
             Path file = markdownExporter.export(currentRepositoryPath, rootNodes,
-                    "Repository " + formatPlaceholder(context.placeholderValue()), buildFeedbackFileName());
+                    "Repository " + formatPlaceholder(context.placeholderValue()), sheetComment, buildFeedbackFileName());
             updateStatus("Markdown exportiert: " + file.getFileName());
         } catch (IOException ex) {
             dialogService.showError("Export fehlgeschlagen", ex.getMessage());

@@ -4,28 +4,26 @@
   "repositoryNumberPlaceholder": "{{number}}",
   "tag": "v1.0.0",
   "deadline": "2024-09-15",
+  "comment": "Bitte beachten: Tests nur nach erfolgreichem Build ausfuehren.",
   "categories": [
     {
       "name": "Funktionale Tests",
       "maxPoints": 20,
-      "commands": [
-        "mvn test"
-      ],
+      "comment": "Automatisierte Tests fuer Kernfunktionalitaet.",
+      "commands": ["mvn test"],
       "children": [
         {
           "name": "Unit Tests",
           "maxPoints": 10,
-          "commands": [
-            "mvn -Dtest=*Test test"
-          ],
+          "comment": "Schnelle Rueckmeldung fuer einzelne Komponenten.",
+          "commands": ["mvn -Dtest=*Test test"],
           "children": []
         },
         {
           "name": "Integration",
           "maxPoints": 10,
-          "commands": [
-            "mvn verify"
-          ],
+          "comment": "Stellt sicher, dass Module zusammenspielen.",
+          "commands": ["mvn verify"],
           "children": []
         }
       ]
@@ -33,17 +31,37 @@
     {
       "name": "Code-Qualitaet",
       "maxPoints": 10,
+      "comment": "Manuelle Bewertung nach Code-Review.",
       "children": [
         {
           "name": "Struktur",
           "maxPoints": 5,
+          "comment": "Bewertet Package- und Klassenstruktur.",
           "commands": [],
           "children": []
         },
         {
           "name": "Dokumentation",
           "maxPoints": 5,
+          "comment": "Inklusive JavaDoc und README.",
           "commands": [],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Hilfstasks",
+      "maxPoints": 0,
+      "pseudo": true,
+      "comment": "Interne Aufgaben zur Vorbereitung; keine Punkte.",
+      "commands": [],
+      "children": [
+        {
+          "name": "Projekt bauen",
+          "maxPoints": 0,
+          "pseudo": true,
+          "comment": "Stellt sicher, dass das Projekt gebaut werden kann.",
+          "commands": ["mvn -q -DskipTests package"],
           "children": []
         }
       ]

@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EvaluationStateSynchronizerTest {
     @Test
     void captureAndRestoreNodeState() {
-        EvaluationNode taskA = new EvaluationNode(null, "Task A", 5.0, List.of());
-        EvaluationNode taskB = new EvaluationNode(null, "Task B", 5.0, List.of());
-        EvaluationNode category = new EvaluationNode(null, "Category", 0.0, List.of());
+        EvaluationNode taskA = new EvaluationNode(null, "Task A", 5.0, List.of(), "", false);
+        EvaluationNode taskB = new EvaluationNode(null, "Task B", 5.0, List.of(), "", false);
+        EvaluationNode category = new EvaluationNode(null, "Category", 0.0, List.of(), "", false);
         category.addChild(taskA);
         category.addChild(taskB);
 

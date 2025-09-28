@@ -219,6 +219,11 @@ public class EvaluationTreeViewAdapter {
                 setText(null);
                 return;
             }
+            if (node.isPseudo()) {
+                setGraphic(null);
+                setText("-");
+                return;
+            }
             if (node.isLeaf()) {
                 updating = true;
                 SpinnerValueFactory.DoubleSpinnerValueFactory valueFactory =

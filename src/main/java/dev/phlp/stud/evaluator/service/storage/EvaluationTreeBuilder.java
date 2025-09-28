@@ -18,7 +18,8 @@ public class EvaluationTreeBuilder {
     }
 
     private EvaluationNode buildNode(EvaluationNodeConfig config, EvaluationNode parent) {
-        EvaluationNode node = new EvaluationNode(null, config.getName(), config.getMaxPoints(), config.getCommands());
+        EvaluationNode node = new EvaluationNode(null, config.getName(), config.getMaxPoints(),
+                config.getCommands(), config.getComment(), config.isPseudo());
         if (parent != null) {
             parent.addChild(node);
         }

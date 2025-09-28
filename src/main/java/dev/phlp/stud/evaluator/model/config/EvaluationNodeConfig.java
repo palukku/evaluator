@@ -16,6 +16,10 @@ public class EvaluationNodeConfig {
 
     private List<String> commands = new ArrayList<>();
 
+    private String comment;
+
+    private boolean pseudo;
+
     private List<EvaluationNodeConfig> children = new ArrayList<>();
 
     public EvaluationNodeConfig() {
@@ -46,6 +50,22 @@ public class EvaluationNodeConfig {
                 commands != null ?
                 commands :
                 new ArrayList<>();
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public boolean isPseudo() {
+        return pseudo;
+    }
+
+    public void setPseudo(boolean pseudo) {
+        this.pseudo = pseudo;
     }
 
     public List<EvaluationNodeConfig> getChildren() {

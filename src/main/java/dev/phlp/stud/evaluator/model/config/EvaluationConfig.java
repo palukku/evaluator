@@ -19,6 +19,8 @@ public class EvaluationConfig {
 
     private LocalDate deadline;
 
+    private String comment;
+
     @JsonProperty("categories")
     private List<EvaluationNodeConfig> rootCategories = new ArrayList<>();
 
@@ -63,6 +65,14 @@ public class EvaluationConfig {
 
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public List<EvaluationNodeConfig> getRootCategories() {

@@ -1,5 +1,29 @@
 package dev.phlp.stud.evaluator.controller;
 
+import dev.phlp.stud.evaluator.EvaluatorApp;
+import dev.phlp.stud.evaluator.model.config.EvaluationConfig;
+import dev.phlp.stud.evaluator.model.config.EvaluationNodeConfig;
+import dev.phlp.stud.evaluator.service.storage.ConfigService;
+import javafx.css.PseudoClass;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,41 +34,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javafx.css.PseudoClass;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-import dev.phlp.stud.evaluator.EvaluatorApp;
-import dev.phlp.stud.evaluator.model.config.EvaluationConfig;
-import dev.phlp.stud.evaluator.model.config.EvaluationNodeConfig;
-import dev.phlp.stud.evaluator.service.storage.ConfigService;
-
 public class ConfigurationEditorController {
-    private enum DropPosition {
-        BEFORE,
-        AFTER,
-        INTO
-    }
     private static final PseudoClass DROP_BEFORE = PseudoClass.getPseudoClass("drop-before");
     private static final PseudoClass DROP_AFTER = PseudoClass.getPseudoClass("drop-after");
     private static final PseudoClass DROP_INTO = PseudoClass.getPseudoClass("drop-into");
     private static final PseudoClass DROP_ROOT = PseudoClass.getPseudoClass("drop-root");
-    private final TreeItem<EvaluationNodeConfig> treeRoot = new TreeItem<>();
     @FXML
     private TextField titleField;
     @FXML
@@ -55,6 +49,8 @@ public class ConfigurationEditorController {
     private TextField tagField;
     @FXML
     private DatePicker deadlinePicker;
+    @FXML
+    private TextArea generalCommentArea;
     @FXML
     private TreeView<EvaluationNodeConfig> categoryTree;
     @FXML
@@ -70,6 +66,10 @@ public class ConfigurationEditorController {
     @FXML
     private TextArea commandsArea;
     @FXML
+    private TextArea nodeCommentArea;
+    @FXML
+    private CheckBox pseudoCheckBox;
+    @FXML
     private Button loadButton;
     @FXML
     private Button saveButton;
@@ -81,12 +81,16 @@ public class ConfigurationEditorController {
     private Button backButton;
     @FXML
     private Label statusLabel;
+
+    private final TreeItem<EvaluationNodeConfig> treeRoot = new TreeItem<>();
+
     private EvaluatorApp application;
     private Stage stage;
     private ConfigService configService;
     private EvaluationConfig currentConfig;
     private File currentFile;
     private Path baseDirectory;
+
     private TreeItem<EvaluationNodeConfig> selectedTreeItem;
     private boolean updatingNodeForm;
     private boolean updatingGeneralFields;
@@ -98,16 +102,10 @@ public class ConfigurationEditorController {
         this.stage = Objects.requireNonNull(stage);
         this.configService = Objects.requireNonNull(configService);
         this.currentFile = sourceFile;
-        this.baseDirectory =
-                baseDirectory != null ?
-                baseDirectory.toAbsolutePath() :
-                Path.of(System.getProperty("user.dir")).toAbsolutePath();
+        this.baseDirectory = baseDirectory != null ? baseDirectory.toAbsolutePath() : Path.of(System.getProperty("user.dir")).toAbsolutePath();
 
         configureControls();
-        EvaluationConfig initial =
-                config != null ?
-                copyConfiguration(config) :
-                createDefaultConfiguration();
+        EvaluationConfig initial = config != null ? copyConfiguration(config) : createDefaultConfiguration();
         loadConfiguration(initial);
     }
 
@@ -117,7 +115,7 @@ public class ConfigurationEditorController {
         categoryTree.setShowRoot(false);
         categoryTree.setCellFactory(tv -> new ConfigurationTreeCell());
         categoryTree.getSelectionModel().selectedItemProperty()
-                    .addListener((obs, oldVal, newVal) -> onTreeSelectionChanged(newVal));
+                .addListener((obs, oldVal, newVal) -> onTreeSelectionChanged(newVal));
 
         categoryTree.setOnDragOver(event -> {
             if (draggedItem != null && isRootDropTarget(event)) {
@@ -151,6 +149,9 @@ public class ConfigurationEditorController {
         maxPointsSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Double.MAX_VALUE, 0.0, 0.5));
         maxPointsSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (!updatingNodeForm && selectedTreeItem != null && selectedTreeItem.getValue() != null && newVal != null) {
+                if (selectedTreeItem.getValue().isPseudo()) {
+                    return;
+                }
                 selectedTreeItem.getValue().setMaxPoints(newVal);
                 updateStatus("Max-Punkte aktualisiert");
             }
@@ -167,6 +168,29 @@ public class ConfigurationEditorController {
             if (!updatingNodeForm && selectedTreeItem != null && selectedTreeItem.getValue() != null) {
                 selectedTreeItem.getValue().setCommands(parseCommands(newVal));
             }
+        });
+
+        nodeCommentArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingNodeForm && selectedTreeItem != null && selectedTreeItem.getValue() != null) {
+                selectedTreeItem.getValue().setComment(newVal);
+            }
+        });
+
+        pseudoCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (updatingNodeForm || selectedTreeItem == null || selectedTreeItem.getValue() == null) {
+                return;
+            }
+            EvaluationNodeConfig node = selectedTreeItem.getValue();
+            node.setPseudo(Boolean.TRUE.equals(newVal));
+            updatingNodeForm = true;
+            if (Boolean.TRUE.equals(newVal)) {
+                node.setMaxPoints(0.0);
+                maxPointsSpinner.getValueFactory().setValue(0.0);
+            }
+            maxPointsSpinner.setDisable(Boolean.TRUE.equals(newVal));
+            updatingNodeForm = false;
+            categoryTree.refresh();
+            updateStatus("Pseudo-Status aktualisiert");
         });
 
         loadButton.setOnAction(event -> chooseAndLoadConfiguration());
@@ -202,6 +226,12 @@ public class ConfigurationEditorController {
             }
         });
 
+        generalCommentArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (!updatingGeneralFields && currentConfig != null) {
+                currentConfig.setComment(newVal);
+            }
+        });
+
         disableNodeForm(true);
         updateNodeButtons();
     }
@@ -209,6 +239,7 @@ public class ConfigurationEditorController {
     private EvaluationConfig createDefaultConfiguration() {
         EvaluationConfig config = new EvaluationConfig();
         config.setRepositoryNumberPlaceholder("{{number}}");
+        config.setComment("");
         config.setRootCategories(new ArrayList<>());
         return config;
     }
@@ -225,6 +256,7 @@ public class ConfigurationEditorController {
         placeholderField.setText(Optional.ofNullable(config.getRepositoryNumberPlaceholder()).orElse("{{number}}"));
         tagField.setText(Optional.ofNullable(config.getTag()).orElse(""));
         deadlinePicker.setValue(config.getDeadline());
+        generalCommentArea.setText(Optional.ofNullable(config.getComment()).orElse(""));
         updatingGeneralFields = false;
         updateStageTitle();
 
@@ -255,6 +287,9 @@ public class ConfigurationEditorController {
         selectedTreeItem = item;
         if (item == null || item.getValue() == null) {
             disableNodeForm(true);
+            if (nodeCommentArea != null) {
+                nodeCommentArea.clear();
+            }
             updateNodeButtons();
             return;
         }
@@ -263,6 +298,10 @@ public class ConfigurationEditorController {
         nodeNameField.setText(Optional.ofNullable(item.getValue().getName()).orElse(""));
         maxPointsSpinner.getValueFactory().setValue(item.getValue().getMaxPoints());
         commandsArea.setText(String.join(System.lineSeparator(), item.getValue().getCommands()));
+        nodeCommentArea.setText(Optional.ofNullable(item.getValue().getComment()).orElse(""));
+        boolean pseudo = item.getValue().isPseudo();
+        pseudoCheckBox.setSelected(pseudo);
+        maxPointsSpinner.setDisable(pseudo);
         updatingNodeForm = false;
         updateNodeButtons();
     }
@@ -271,6 +310,18 @@ public class ConfigurationEditorController {
         nodeNameField.setDisable(disable);
         maxPointsSpinner.setDisable(disable);
         commandsArea.setDisable(disable);
+        if (nodeCommentArea != null) {
+            nodeCommentArea.setDisable(disable);
+            if (disable) {
+                nodeCommentArea.clear();
+            }
+        }
+        if (pseudoCheckBox != null) {
+            pseudoCheckBox.setDisable(disable);
+            if (disable) {
+                pseudoCheckBox.setSelected(false);
+            }
+        }
     }
 
     private void addRootNode() {
@@ -411,10 +462,7 @@ public class ConfigurationEditorController {
 
     private DropPosition determineDropPosition(DragEvent event, TreeCell<EvaluationNodeConfig> cell) {
         double y = event.getY();
-        double height =
-                cell.getHeight() <= 0 ?
-                cell.getBoundsInLocal().getHeight() :
-                cell.getHeight();
+        double height = cell.getHeight() <= 0 ? cell.getBoundsInLocal().getHeight() : cell.getHeight();
         if (height <= 0) {
             return DropPosition.INTO;
         }
@@ -425,6 +473,109 @@ public class ConfigurationEditorController {
             return DropPosition.AFTER;
         }
         return DropPosition.INTO;
+    }
+
+    private enum DropPosition {
+        BEFORE,
+        AFTER,
+        INTO
+    }
+
+    private class ConfigurationTreeCell extends TreeCell<EvaluationNodeConfig> {
+        ConfigurationTreeCell() {
+            setOnDragDetected(event -> {
+                if (getItem() == null) {
+                    return;
+                }
+                draggedItem = getTreeItem();
+                categoryTree.pseudoClassStateChanged(DROP_ROOT, false);
+                Dragboard db = startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(Optional.ofNullable(getItem().getName()).orElse(""));
+                db.setContent(content);
+                event.consume();
+            });
+
+            setOnDragOver(event -> {
+                TreeItem<EvaluationNodeConfig> targetItem = getTreeItem();
+                if (draggedItem == null || targetItem == null || draggedItem == targetItem
+                        || isDescendant(draggedItem, targetItem)) {
+                    showDropIndicator(null);
+                    return;
+                }
+                DropPosition position = determineDropPosition(event, this);
+                showDropIndicator(position);
+                event.acceptTransferModes(TransferMode.MOVE);
+                event.consume();
+            });
+
+            setOnDragExited(event -> showDropIndicator(null));
+
+            setOnDragDropped(event -> {
+                TreeItem<EvaluationNodeConfig> targetItem = getTreeItem();
+                if (draggedItem == null || targetItem == null || draggedItem == targetItem
+                        || isDescendant(draggedItem, targetItem)) {
+                    showDropIndicator(null);
+                    return;
+                }
+                DropPosition position = determineDropPosition(event, this);
+                showDropIndicator(null);
+                categoryTree.pseudoClassStateChanged(DROP_ROOT, false);
+                switch (position) {
+                    case BEFORE -> {
+                        TreeItem<EvaluationNodeConfig> parent = targetItem.getParent();
+                        if (parent != null) {
+                            int index = parent.getChildren().indexOf(targetItem);
+                            moveTreeItem(draggedItem, parent, index);
+                            updateStatus("Element verschoben");
+                        }
+                    }
+                    case AFTER -> {
+                        TreeItem<EvaluationNodeConfig> parent = targetItem.getParent();
+                        if (parent != null) {
+                            int index = parent.getChildren().indexOf(targetItem);
+                            moveTreeItem(draggedItem, parent, index + 1);
+                            updateStatus("Element verschoben");
+                        }
+                    }
+                    case INTO -> {
+                        ensureChildrenList(targetItem.getValue());
+                        moveTreeItem(draggedItem, targetItem, targetItem.getChildren().size());
+                        targetItem.setExpanded(true);
+                        updateStatus("Element verschoben");
+                    }
+                }
+                event.setDropCompleted(true);
+                draggedItem = null;
+                event.consume();
+            });
+
+            setOnDragDone(event -> {
+                draggedItem = null;
+                showDropIndicator(null);
+            });
+        }
+
+        @Override
+        protected void updateItem(EvaluationNodeConfig item, boolean empty) {
+            super.updateItem(item, empty);
+            showDropIndicator(null);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                String label = Optional.ofNullable(item.getName()).orElse("(Unbenannt)");
+                if (item.isPseudo()) {
+                    label = label + " [Pseudo]";
+                }
+                setText(label);
+            }
+        }
+
+        private void showDropIndicator(DropPosition position) {
+            pseudoClassStateChanged(DROP_BEFORE, position == DropPosition.BEFORE);
+            pseudoClassStateChanged(DROP_AFTER, position == DropPosition.AFTER);
+            pseudoClassStateChanged(DROP_INTO, position == DropPosition.INTO);
+        }
     }
 
     private void updateNodeButtons() {
@@ -438,7 +589,9 @@ public class ConfigurationEditorController {
         node.setName(name);
         node.setMaxPoints(0.0);
         node.setCommands(new ArrayList<>());
+        node.setComment("");
         node.setChildren(new ArrayList<>());
+        node.setPseudo(false);
         return node;
     }
 
@@ -550,101 +703,8 @@ public class ConfigurationEditorController {
             return new ArrayList<>();
         }
         return Arrays.stream(text.split("\\R"))
-                     .map(String::trim)
-                     .filter(line -> !line.isBlank())
-                     .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private class ConfigurationTreeCell extends TreeCell<EvaluationNodeConfig> {
-        ConfigurationTreeCell() {
-            setOnDragDetected(event -> {
-                if (getItem() == null) {
-                    return;
-                }
-                draggedItem = getTreeItem();
-                categoryTree.pseudoClassStateChanged(DROP_ROOT, false);
-                Dragboard db = startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString(Optional.ofNullable(getItem().getName()).orElse(""));
-                db.setContent(content);
-                event.consume();
-            });
-
-            setOnDragOver(event -> {
-                TreeItem<EvaluationNodeConfig> targetItem = getTreeItem();
-                if (draggedItem == null || targetItem == null || draggedItem == targetItem
-                        || isDescendant(draggedItem, targetItem)) {
-                    showDropIndicator(null);
-                    return;
-                }
-                DropPosition position = determineDropPosition(event, this);
-                showDropIndicator(position);
-                event.acceptTransferModes(TransferMode.MOVE);
-                event.consume();
-            });
-
-            setOnDragExited(event -> showDropIndicator(null));
-
-            setOnDragDropped(event -> {
-                TreeItem<EvaluationNodeConfig> targetItem = getTreeItem();
-                if (draggedItem == null || targetItem == null || draggedItem == targetItem
-                        || isDescendant(draggedItem, targetItem)) {
-                    showDropIndicator(null);
-                    return;
-                }
-                DropPosition position = determineDropPosition(event, this);
-                showDropIndicator(null);
-                categoryTree.pseudoClassStateChanged(DROP_ROOT, false);
-                switch (position) {
-                    case BEFORE -> {
-                        TreeItem<EvaluationNodeConfig> parent = targetItem.getParent();
-                        if (parent != null) {
-                            int index = parent.getChildren().indexOf(targetItem);
-                            moveTreeItem(draggedItem, parent, index);
-                            updateStatus("Element verschoben");
-                        }
-                    }
-                    case AFTER -> {
-                        TreeItem<EvaluationNodeConfig> parent = targetItem.getParent();
-                        if (parent != null) {
-                            int index = parent.getChildren().indexOf(targetItem);
-                            moveTreeItem(draggedItem, parent, index + 1);
-                            updateStatus("Element verschoben");
-                        }
-                    }
-                    case INTO -> {
-                        ensureChildrenList(targetItem.getValue());
-                        moveTreeItem(draggedItem, targetItem, targetItem.getChildren().size());
-                        targetItem.setExpanded(true);
-                        updateStatus("Element verschoben");
-                    }
-                }
-                event.setDropCompleted(true);
-                draggedItem = null;
-                event.consume();
-            });
-
-            setOnDragDone(event -> {
-                draggedItem = null;
-                showDropIndicator(null);
-            });
-        }
-
-        @Override
-        protected void updateItem(EvaluationNodeConfig item, boolean empty) {
-            super.updateItem(item, empty);
-            showDropIndicator(null);
-            if (empty || item == null) {
-                setText(null);
-            } else {
-                setText(Optional.ofNullable(item.getName()).orElse("(Unbenannt)"));
-            }
-        }
-
-        private void showDropIndicator(DropPosition position) {
-            pseudoClassStateChanged(DROP_BEFORE, position == DropPosition.BEFORE);
-            pseudoClassStateChanged(DROP_AFTER, position == DropPosition.AFTER);
-            pseudoClassStateChanged(DROP_INTO, position == DropPosition.INTO);
-        }
+                .map(String::trim)
+                .filter(line -> !line.isBlank())
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

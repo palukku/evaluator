@@ -26,10 +26,12 @@ class ConfigServiceTest {
         EvaluationNodeConfig category = new EvaluationNodeConfig();
         category.setName("Category");
         category.setMaxPoints(5.0);
+        category.setPseudo(false);
         EvaluationNodeConfig task = new EvaluationNodeConfig();
         task.setName("Task");
         task.setMaxPoints(5.0);
         task.setCommands(List.of("mvn test"));
+        task.setPseudo(true);
         category.getChildren().add(task);
         original.getRootCategories().add(category);
 
@@ -50,5 +52,7 @@ class ConfigServiceTest {
         assertEquals("v1.0.0", original.getTag());
         assertEquals(LocalDate.of(2024, 9, 15), original.getDeadline());
         assertEquals("Category", original.getRootCategories().get(0).getName());
+        assertTrue(original.getRootCategories().get(0).getChildren().get(0).isPseudo());
+        assertTrue(copy.getRootCategories().get(0).getChildren().get(0).isPseudo());
     }
 }

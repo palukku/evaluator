@@ -98,7 +98,7 @@ public final class EvaluationTreeController {
                 workflow::isRepositoryReady);
         adapter.initialize();
 
-        treeRoot = new TreeItem<>(new EvaluationNode("root", "root", 0.0, List.of()));
+        treeRoot = new TreeItem<>(new EvaluationNode("root", "root", 0.0, List.of(), "", false));
         treeRoot.setExpanded(true);
         evaluationTreeTable.setRoot(treeRoot);
         evaluationTreeTable.setShowRoot(false);
