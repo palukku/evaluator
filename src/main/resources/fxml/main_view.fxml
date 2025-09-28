@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane
+        xmlns:fx="http://javafx.com/fxml/1"
+        xmlns="http://javafx.com/javafx/21"
+        fx:controller="dev.phlp.stud.evaluator.controller.MainController">
+    <top>
+        <fx:include
+                source="repository_toolbar.fxml"
+                fx:id="repositoryToolbar"
+                BorderPane.alignment="CENTER"/>
+    </top>
+    <center>
+        <VBox spacing="8"
+              BorderPane.alignment="CENTER">
+            <children>
+                <fx:include
+                        source="evaluation_tree.fxml"
+                        fx:id="evaluationTree"
+                        VBox.vgrow="ALWAYS"/>
+                <fx:include
+                        source="comment_pane.fxml"
+                        fx:id="commentPane"/>
+            </children>
+            <padding>
+                <Insets top="8"
+                        right="12"
+                        bottom="0"
+                        left="12"/>
+            </padding>
+        </VBox>
+    </center>
+    <bottom>
+        <fx:include
+                source="status_bar.fxml"
+                fx:id="statusBar"
+                BorderPane.alignment="CENTER_LEFT"/>
+    </bottom>
+</BorderPane>

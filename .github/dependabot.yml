@@ -1,0 +1,68 @@
+version: 2
+updates:
+  # --- Maven: Dependencies & Plugins aus der pom.xml (inkl. Properties) ---
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Berlin"
+    # Immer auf die jeweils neueste Version anheben (auch Major)
+    rebase-strategy: "auto"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Konzentriere dich auf direkte Abhängigkeiten/Plugins dieser pom.xml
+    allow:
+      - dependency-type: "direct"
+    # Praktische Gruppierungen für übersichtliche PRs
+    groups:
+      javafx:
+        patterns:
+          - "org.openjfx:*"
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson.core:*"
+          - "com.fasterxml.jackson.datatype:*"
+      jgit:
+        patterns:
+          - "org.eclipse.jgit:*"
+      slf4j:
+        patterns:
+          - "org.slf4j:*"
+      junit-test:
+        patterns:
+          - "org.junit.jupiter:*"
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:maven-compiler-plugin"
+          - "org.apache.maven.plugins:maven-surefire-plugin"
+          - "org.openjfx:javafx-maven-plugin"
+      other-direct-deps:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "org.openjfx:*"
+          - "com.fasterxml.jackson.core:*"
+          - "com.fasterxml.jackson.datatype:*"
+          - "org.eclipse.jgit:*"
+          - "org.slf4j:*"
+          - "org.junit.jupiter:*"
+          - "org.apache.maven.plugins:maven-compiler-plugin"
+          - "org.apache.maven.plugins:maven-surefire-plugin"
+          - "org.openjfx:javafx-maven-plugin"
+
+  # --- GitHub Actions in diesem Repo ---
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:30"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"

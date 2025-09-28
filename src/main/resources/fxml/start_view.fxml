@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/21"
+      spacing="16"
+      alignment="CENTER"
+      prefWidth="420"
+      prefHeight="220"
+      fx:controller="dev.phlp.stud.evaluator.controller.StartViewController">
+    <children>
+        <Label text="Evaluator"
+               style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <Label text="Bitte waehlen Sie, wie Sie fortfahren moechten."
+               wrapText="true"/>
+        <VBox spacing="8"
+              alignment="CENTER">
+            <children>
+                <Button fx:id="loadConfigButton"
+                        text="Konfiguration aus JSON laden"
+                        minWidth="260"/>
+                <Button fx:id="openEditorButton"
+                        text="Konfiguration bearbeiten/neu erstellen"
+                        minWidth="260"/>
+                <Button fx:id="exitButton"
+                        text="Beenden"
+                        minWidth="260"/>
+            </children>
+        </VBox>
+    </children>
+    <padding>
+        <Insets top="24"
+                right="24"
+                bottom="24"
+                left="24"/>
+    </padding>
+</VBox>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/21"
+      fx:controller="dev.phlp.stud.evaluator.controller.CommandTerminalController"
+      spacing="8"
+      prefWidth="640"
+      prefHeight="420">
+    <children>
+        <Label fx:id="titleLabel"
+               text="Command Output"/>
+        <TextArea
+                fx:id="outputArea"
+                wrapText="true"
+                editable="false"
+                VBox.vgrow="ALWAYS"/>
+        <Label fx:id="instructionsLabel"
+               wrapText="true"
+               text=""/>
+        <HBox spacing="8"
+              alignment="CENTER_LEFT">
+            <children>
+                <Label text="Punkte"/>
+                <Spinner
+                        fx:id="pointsSpinner"
+                        prefWidth="120"/>
+                <Button fx:id="applyPointsButton"
+                        text="Punkte setzen"
+                        mnemonicParsing="false"/>
+                <Button fx:id="maxPointsButton"
+                        text="Max-Punkte"
+                        mnemonicParsing="false"/>
+                <Button fx:id="zeroPointsButton"
+                        text="0 Punkte"
+                        mnemonicParsing="false"/>
+            </children>
+        </HBox>
+        <HBox spacing="8"
+              alignment="CENTER_RIGHT">
+            <children>
+                <ProgressIndicator
+                        fx:id="progressIndicator"
+                        prefWidth="24"
+                        prefHeight="24"
+                        visible="false"/>
+                <Label fx:id="statusLabel"
+                       text=""/>
+                <Button fx:id="rerunButton"
+                        text="Erneut ausf�hren"
+                        mnemonicParsing="false"
+                        disable="true"/>
+                <Button fx:id="cancelButton"
+                        text="Abbrechen"
+                        mnemonicParsing="false"
+                        disable="true"/>
+                <Button fx:id="closeButton"
+                        text="Schliessen"
+                        mnemonicParsing="false"/>
+            </children>
+        </HBox>
+    </children>
+    <padding>
+        <Insets top="12"
+                right="12"
+                bottom="12"
+                left="12"/>
+    </padding>
+</VBox>

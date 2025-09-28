@@ -1,0 +1,275 @@
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+
+    /* Background colors */
+    -color-neutral: #f4f6f8;
+    -color-neutral-hover: derive(-color-neutral, -8%);
+    -color-neutral-selected: derive(-color-neutral, -16%);
+
+    -color-pending: #e9e9ed;
+    -color-pending-hover: derive(-color-pending, -8%);
+    -color-pending-selected: derive(-color-pending, -16%);
+
+    -color-running: #fff3cd;
+    -color-running-hover: derive(-color-running, -10%);
+    -color-running-selected: derive(-color-running, -20%);
+
+    -color-success: #e6f6e6;
+    -color-success-hover: derive(-color-success, -10%);
+    -color-success-selected: derive(-color-success, -20%);
+
+    -color-failed: #fde0dd;
+    -color-failed-hover: derive(-color-failed, -10%);
+    -color-failed-selected: derive(-color-failed, -20%);
+
+    -color-manual-grey: #f4f4f7;
+    -color-manual-grey-hover: derive(-color-manual-grey, -8%);
+    -color-manual-grey-selected: derive(-color-manual-grey, -16%);
+
+    -color-manual-orange: #fff4e5;
+    -color-manual-orange-hover: derive(-color-manual-orange, -10%);
+    -color-manual-orange-selected: derive(-color-manual-orange, -20%);
+
+    -color-batch-pending: #f4f4f7;
+    -color-batch-pending-selected: derive(-color-batch-pending, -16%);
+    -color-batch-running: #ffcc80;
+    -color-batch-running-selected: derive(-color-batch-running, -25%);
+    -color-batch-success: #e6f6e6;
+    -color-batch-success-selected: derive(-color-batch-success, -20%);
+    -color-batch-failed: #fde0dd;
+    -color-batch-failed-selected: derive(-color-batch-failed, -20%);
+    -color-batch-cancelled: #e9e9ed;
+    -color-batch-cancelled-selected: derive(-color-batch-cancelled, -16%);
+
+    /* Text colors */
+    -color-text-default: #333333;
+    -color-text-pending: #2f2f35;
+    -color-text-running: #6d5200;
+    -color-text-success: #1f4d1f;
+    -color-text-failed: #7a1e1e;
+    -color-text-manual-orange: #6d3b00;
+
+    -color-link-highlight: #d9534f;
+}
+
+.tree-table-row-cell.run-neutral:filled {
+    -fx-background-color: -color-neutral;
+}
+
+.tree-table-row-cell.run-neutral:filled:hover {
+    -fx-background-color: -color-neutral-hover;
+}
+
+.tree-table-row-cell.run-neutral:filled:selected {
+    -fx-background-color: -color-neutral-selected;
+}
+
+.tree-table-row-cell.run-pending:filled {
+    -fx-background-color: -color-pending;
+}
+
+.tree-table-row-cell.run-pending:filled:hover {
+    -fx-background-color: -color-pending-hover;
+}
+
+.tree-table-row-cell.run-pending:filled:selected {
+    -fx-background-color: -color-pending-selected;
+}
+
+.tree-table-row-cell.run-running:filled {
+    -fx-background-color: -color-running;
+}
+
+.tree-table-row-cell.run-running:filled:hover {
+    -fx-background-color: -color-running-hover;
+}
+
+.tree-table-row-cell.run-running:filled:selected {
+    -fx-background-color: -color-running-selected;
+}
+
+.tree-table-row-cell.run-success:filled {
+    -fx-background-color: -color-success;
+}
+
+.tree-table-row-cell.run-success:filled:hover {
+    -fx-background-color: -color-success-hover;
+}
+
+.tree-table-row-cell.run-success:filled:selected {
+    -fx-background-color: -color-success-selected;
+}
+
+.tree-table-row-cell.run-failed:filled {
+    -fx-background-color: -color-failed;
+}
+
+.tree-table-row-cell.run-failed:filled:hover {
+    -fx-background-color: -color-failed-hover;
+}
+
+.tree-table-row-cell.run-failed:filled:selected {
+    -fx-background-color: -color-failed-selected;
+}
+
+.tree-table-row-cell.manual-grey:filled {
+    -fx-background-color: -color-manual-grey;
+}
+
+.tree-table-row-cell.manual-grey:filled:hover {
+    -fx-background-color: -color-manual-grey-hover;
+}
+
+.tree-table-row-cell.manual-grey:filled:selected {
+    -fx-background-color: -color-manual-grey-selected;
+}
+
+.tree-table-row-cell.manual-green:filled {
+    -fx-background-color: -color-success;
+}
+
+.tree-table-row-cell.manual-green:filled:hover {
+    -fx-background-color: -color-success-hover;
+}
+
+.tree-table-row-cell.manual-green:filled:selected {
+    -fx-background-color: -color-success-selected;
+}
+
+.tree-table-row-cell.manual-orange:filled {
+    -fx-background-color: -color-manual-orange;
+}
+
+.tree-table-row-cell.manual-orange:filled:hover {
+    -fx-background-color: -color-manual-orange-hover;
+}
+
+.tree-table-row-cell.manual-orange:filled:selected {
+    -fx-background-color: -color-manual-orange-selected;
+}
+
+.tree-table-row-cell.manual-red:filled {
+    -fx-background-color: -color-failed;
+}
+
+.tree-table-row-cell.manual-red:filled:hover {
+    -fx-background-color: -color-failed-hover;
+}
+
+.tree-table-row-cell.manual-red:filled:selected {
+    -fx-background-color: -color-failed-selected;
+}
+
+.tree-table-row-cell.run-neutral:filled .tree-table-cell,
+.tree-table-row-cell.run-neutral:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-default;
+}
+
+.tree-table-row-cell.run-pending:filled .tree-table-cell,
+.tree-table-row-cell.run-pending:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-pending;
+}
+
+.tree-table-row-cell.run-running:filled .tree-table-cell,
+.tree-table-row-cell.run-running:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-running;
+}
+
+.tree-table-row-cell.run-success:filled .tree-table-cell,
+.tree-table-row-cell.run-success:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-success;
+}
+
+.tree-table-row-cell.run-failed:filled .tree-table-cell,
+.tree-table-row-cell.run-failed:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-failed;
+}
+
+.tree-table-row-cell.manual-grey:filled .tree-table-cell,
+.tree-table-row-cell.manual-grey:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-default;
+}
+
+.tree-table-row-cell.manual-green:filled .tree-table-cell,
+.tree-table-row-cell.manual-green:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-success;
+}
+
+.tree-table-row-cell.manual-orange:filled .tree-table-cell,
+.tree-table-row-cell.manual-orange:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-manual-orange;
+}
+
+.tree-table-row-cell.manual-red:filled .tree-table-cell,
+.tree-table-row-cell.manual-red:filled:hover .tree-table-cell {
+    -fx-text-fill: -color-text-failed;
+}
+
+.hyperlink.log-highlight {
+    -fx-text-fill: -color-link-highlight;
+}
+
+.list-cell.batch-pending:filled {
+    -fx-background-color: -color-batch-pending;
+}
+
+.list-cell.batch-pending:filled:selected {
+    -fx-background-color: -color-batch-pending-selected;
+}
+
+.list-cell.batch-running:filled {
+    -fx-background-color: -color-batch-running;
+}
+
+.list-cell.batch-running:filled:selected {
+    -fx-background-color: -color-batch-running-selected;
+}
+
+.list-cell.batch-success:filled {
+    -fx-background-color: -color-batch-success;
+}
+
+.list-cell.batch-success:filled:selected {
+    -fx-background-color: -color-batch-success-selected;
+}
+
+.list-cell.batch-failed:filled {
+    -fx-background-color: -color-batch-failed;
+}
+
+.list-cell.batch-failed:filled:selected {
+    -fx-background-color: -color-batch-failed-selected;
+}
+
+.list-cell.batch-cancelled:filled {
+    -fx-background-color: -color-batch-cancelled;
+}
+
+.list-cell.batch-cancelled:filled:selected {
+    -fx-background-color: -color-batch-cancelled-selected;
+}
+
+.tree-cell:drop-before {
+    -fx-border-color: -fx-focus-color;
+    -fx-border-width: 2 0 0 0;
+    -fx-border-insets: 0 4 0 4;
+}
+
+.tree-cell:drop-after {
+    -fx-border-color: -fx-focus-color;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-insets: 0 4 0 4;
+}
+
+.tree-cell:drop-into {
+    -fx-background-color: derive(-fx-focus-color, 75%);
+    -fx-background-insets: 0;
+    -fx-text-fill: -color-text-default;
+}
+
+.tree-view:drop-root {
+    -fx-border-color: -fx-focus-color;
+    -fx-border-width: 0 0 0 3;
+    -fx-border-insets: 2;
+}

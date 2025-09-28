@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/21"
+      fx:controller="dev.phlp.stud.evaluator.controller.StatusBarController"
+      spacing="6">
+    <children>
+        <HBox spacing="12"
+              alignment="CENTER_LEFT">
+            <children>
+                <Label text="Gesamt:"/>
+                <Label fx:id="totalPointsLabel"
+                       text="0 / 0"/>
+                <ProgressBar
+                        fx:id="cloneProgressBar"
+                        prefWidth="220"
+                        visible="false"
+                        managed="false"/>
+                <Label fx:id="cloneProgressLabel"
+                       text=""
+                       visible="false"
+                       managed="false"/>
+                <Label fx:id="checkoutInfoLabel"
+                       text="Checkout: -"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="statusLabel"
+                       text=""/>
+                <Hyperlink
+                        fx:id="logDetailsToggle"
+                        text="Details anzeigen"
+                        focusTraversable="false"/>
+            </children>
+            <padding>
+                <Insets top="0"
+                        right="12"
+                        bottom="0"
+                        left="12"/>
+            </padding>
+        </HBox>
+        <TitledPane
+                fx:id="logDetailsPane"
+                text="Protokoll"
+                expanded="true"
+                visible="false"
+                managed="false"
+                collapsible="false">
+            <content>
+                <TextArea
+                        fx:id="logDetailsArea"
+                        editable="false"
+                        wrapText="false"
+                        prefRowCount="6"/>
+            </content>
+        </TitledPane>
+    </children>
+    <padding>
+        <Insets top="8"
+                right="12"
+                bottom="8"
+                left="12"/>
+    </padding>
+</VBox>

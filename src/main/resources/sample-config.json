@@ -1,0 +1,52 @@
+{
+  "title": "Programmierung 1 - Bewertung",
+  "repositoryUrlTemplate": "https://git.example.com/student{{number}}/assignment.git",
+  "repositoryNumberPlaceholder": "{{number}}",
+  "tag": "v1.0.0",
+  "deadline": "2024-09-15",
+  "categories": [
+    {
+      "name": "Funktionale Tests",
+      "maxPoints": 20,
+      "commands": [
+        "mvn test"
+      ],
+      "children": [
+        {
+          "name": "Unit Tests",
+          "maxPoints": 10,
+          "commands": [
+            "mvn -Dtest=*Test test"
+          ],
+          "children": []
+        },
+        {
+          "name": "Integration",
+          "maxPoints": 10,
+          "commands": [
+            "mvn verify"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "Code-Qualitaet",
+      "maxPoints": 10,
+      "children": [
+        {
+          "name": "Struktur",
+          "maxPoints": 5,
+          "commands": [],
+          "children": []
+        },
+        {
+          "name": "Dokumentation",
+          "maxPoints": 5,
+          "commands": [],
+          "children": []
+        }
+      ]
+    }
+  ]
+}

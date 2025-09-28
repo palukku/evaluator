@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane
+        xmlns:fx="http://javafx.com/fxml/1"
+        xmlns="http://javafx.com/javafx/21"
+        fx:controller="dev.phlp.stud.evaluator.controller.EvaluationTreeController">
+    <children>
+        <TreeTableView
+                fx:id="evaluationTreeTable"
+                showRoot="false"
+                AnchorPane.topAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0"
+                AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0">
+            <columns>
+                <TreeTableColumn
+                        fx:id="nameColumn"
+                        text="Name"/>
+                <TreeTableColumn
+                        fx:id="actionsColumn"
+                        text="Aktionen"
+                        prefWidth="160"
+                        minWidth="140"
+                        maxWidth="220"/>
+                <TreeTableColumn
+                        fx:id="maxPointsColumn"
+                        text="Max-Punkte"
+                        prefWidth="120"
+                        minWidth="110"
+                        maxWidth="150"/>
+                <TreeTableColumn
+                        fx:id="achievedPointsColumn"
+                        text="Erreichte Punkte"
+                        prefWidth="160"
+                        minWidth="140"
+                        maxWidth="200"/>
+            </columns>
+        </TreeTableView>
+    </children>
+</AnchorPane>
