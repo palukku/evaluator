@@ -19,7 +19,7 @@
         <javafx.version>26-ea+7</javafx.version>
         <jackson.version>2.20.0</jackson.version>
         <junit.jupiter.version>5.13.4</junit.jupiter.version>
-        <jgit.version>7.3.0.202506031305-r</jgit.version>
+        <jgit.version>7.4.0.202509020913-r</jgit.version>
         <slf4j.version>2.0.17</slf4j.version>
 
         <!-- Maven Plugins -->
